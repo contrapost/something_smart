@@ -24,6 +24,7 @@ fun main() {
         ctx.ack(":wave: Hello you there, ${scr?.payload?.userName}! You want me to poke ${scr?.payload?.text}?")
     }
 
-    val server = SlackAppServer(app)
-    server.start() // http://localhost:3000/slack/events
+    val server = SlackAppServer(app, 8080)
+
+    server.start()
 }

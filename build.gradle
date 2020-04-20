@@ -1,21 +1,55 @@
+buildscript {    // Configuration for building
+    repositories {
+        jcenter()    // Bintray's repository - a fast Maven Central mirror & more
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.cloud.tools:appengine-gradle-plugin:2.2.0' // If a newer version is available, use it
+    }
+}
+
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.3.72'
     id("application")
+    id 'java'
 }
 
-group 'org.example'
-version '1.0-SNAPSHOT'
+apply plugin: 'com.google.cloud.tools.appengine'  // App Engine tasks
 
-repositories {
+repositories {   // repositories for Jar's you access in your code
+    maven {
+        url 'https://oss.sonatype.org/content/repositories/snapshots' // SNAPSHOT repository (if needed)
+    }
     mavenCentral()
+    jcenter()
+}
+
+appengine {  // App Engine tasks configuration
+    deploy {   // deploy configuration
+        projectId = 'something-smart-274819'
+        version = '1'
+    }
 }
 
 dependencies {
+    compile 'com.google.appengine:appengine:+'
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation("com.slack.api:bolt:1.0.6")
     implementation("com.slack.api:bolt-servlet:1.0.6")
     implementation("com.slack.api:bolt-jetty:1.0.6")
     implementation("org.slf4j:slf4j-simple:1.7.30")
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'me.contrapost.somethingsmart.bot.SomethingSmartAppKt'
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 application {
@@ -33,3 +67,9 @@ run {
     // gradle run -DslackLogLevel=debug
     systemProperty "org.slf4j.simpleLogger.log.com.slack.api", System.getProperty("slackLogLevel")
 }
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8     // App Engine Flexible uses Java 8
+targetCompatibility = 1.8     // App Engine Flexible uses Java 8

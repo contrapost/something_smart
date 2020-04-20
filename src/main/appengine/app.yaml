@@ -1,0 +1,6 @@
+# [START runtime]
+runtime: java11
+entrypoint: java -Xmx64m -jar someting_smart-1.0-SNAPSHOT.jar
+
+includes:
+  - env_variables.yaml
